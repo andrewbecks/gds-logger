@@ -1,7 +1,7 @@
 application: logio-301
-version 1
+version: 1
 runtime: php
-api_version:1
+api_version: 1
 handlers:
 - url: /.*
   script: index.php
