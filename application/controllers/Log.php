@@ -9,7 +9,14 @@ class Log {
 		}
 	}
 	private function post(){
-
+		$obj = new GDS\Schema('Log');
+		$obj->addString('namespace')
+			->addString('entity')
+			->addString('kind')
+			->addString('type')
+			->addBoolean('done')
+			->addDatetime('created')
+			->addString('Description');
 	}
 	private function get(){
 
