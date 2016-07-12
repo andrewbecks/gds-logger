@@ -1,6 +1,6 @@
 application: logio-301
-version: 1
-runtime: php
+version: 2
+runtime: php55
 api_version: 1
 handlers:
 - url: /.*
