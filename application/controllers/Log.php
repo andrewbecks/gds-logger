@@ -67,6 +67,7 @@ class Log {
 			'created' => '',
 			'Description' => ''
 		]);
+		var_dump($object);
 	}
 	private function get(){
 
