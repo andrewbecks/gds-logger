@@ -10,6 +10,10 @@ class myLog{
 	 */
 	public $namespace;
 	/**
+	 * @var $schema string
+	 */
+	public $schema;
+	/**
 	 * @var $entity string
 	 */
 	public $entity;
@@ -49,7 +53,15 @@ class Log {
 	}
 	private function post(){
 		$json = $this->_getLog();
-		$obj = new GDS\Schema('Log');
+		$schema = $json->schema;
+		$namespace = $json->namespace;
+		$entity = $json->entity;
+		$kind = $json->kind;
+		$type = $json->properties->type;
+		$done = $json->properties->done;
+		$created = $json->properties->created;
+		$description = $json->properties->description;
+		$obj = new GDS\Schema($schema);
 		$obj->addString('namespace')
 			->addString('entity')
 			->addString('kind')
@@ -59,13 +71,13 @@ class Log {
 			->addString('Description');
 		$log = new GDS\Store($obj);
 		$object = $log->createEntity([
-			'namespace' => '',
-			'entity' => '',
-			'kind' => '',
-			'type' => '',
-			'done' => '',
-			'created' => '',
-			'Description' => ''
+			'namespace' => $namespace,
+			'entity' => $entity,
+			'kind' => $kind,
+			'type' => $type,
+			'done' => $done,
+			'created' => new DateTime($created),
+			'Description' => $description
 		]);
 		var_dump($object);
 	}
