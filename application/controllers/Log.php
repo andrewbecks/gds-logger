@@ -5,6 +5,7 @@
  * @var $properties Properties
  */
 class myLog{
+	public $_id;
 	/**
 	 * @var $namespace string
 	 */
@@ -37,6 +38,10 @@ class Properties{
 	public $description;
 }
 class Log {
+	/**
+	 * @var $schema \GDS\Schema
+	 */
+	private $schema;
 	public function index(){
 		if($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'PUT'){
 			$this->post();
@@ -51,16 +56,7 @@ class Log {
 	private function _getLog(){
 		return json_decode(file_get_contents('php://input'));
 	}
-	private function post(){
-		$json = $this->_getLog();
-		$schema = $json->schema;
-		$namespace = $json->namespace;
-		$entity = $json->entity;
-		$kind = $json->kind;
-		$type = $json->properties->type;
-		$done = $json->properties->done;
-		$created = $json->properties->created;
-		$description = $json->properties->description;
+	private function _makeSchema($schema){
 		$obj = new GDS\Schema($schema);
 		$obj->addString('namespace')
 			->addString('entity')
@@ -69,6 +65,20 @@ class Log {
 			->addBoolean('done')
 			->addDatetime('created')
 			->addString('Description');
+		$this->schema=$obj;
+	}
+	private function post(){
+		$json = $this->_getLog();
+		$schema = $json->schema;
+		$this->_makeSchema($schema);
+		$namespace = $json->namespace;
+		$entity = $json->entity;
+		$kind = $json->kind;
+		$type = $json->properties->type;
+		$done = $json->properties->done;
+		$created = $json->properties->created;
+		$description = $json->properties->description;
+		$obj = $this->schema;
 		$log = new GDS\Store($obj);
 		$object = $log->createEntity([
 			'namespace' => $namespace,
@@ -79,9 +89,29 @@ class Log {
 			'created' => new DateTime($created),
 			'Description' => $description
 		]);
-		var_dump($object);
+		$log->upsert($object);
+		$json->_id=$object->getKeyId();
+		header('Content-Type:application/json');
+		set_status_header(201);
+		echo json_encode($json, JSON_PRETTY_PRINT);
 	}
 	private function get(){
+		try{
 
+			$this->_makeSchema('log');
+			$store = new GDS\Store($this->schema);
+			$rows = $store->fetchAll((array_key_exists('query',$_GET)?$_GET['query']:null));
+			$data=[];
+			foreach($rows as $row){
+				$temp=$row->getData();
+				$temp['_id']=$row->getKeyId();
+				$data[]=$temp;
+			}
+			header('Content-Type:application/json');
+			echo json_encode($data,JSON_PRETTY_PRINT);
+		}catch(Exception $e){
+			echo $e->getMessage();
+			echo "\nSome weird Exception";
+		}
 	}
 }
