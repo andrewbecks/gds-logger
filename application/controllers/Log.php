@@ -111,6 +111,7 @@ class Log {
 			echo json_encode($data,JSON_PRETTY_PRINT);
 		}catch(Exception $e){
 			echo $e->getMessage();
+			set_status_header(500);
 			echo "\nSome weird Exception";
 		}
 	}
