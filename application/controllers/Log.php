@@ -98,7 +98,7 @@ class Log {
 	private function get(){
 		try{
 
-			$this->_makeSchema('log');
+			$this->_makeSchema(array_key_exists('schema',$_GET)?$_GET['schema']:'log');
 			$store = new GDS\Store($this->schema);
 			$rows = $store->fetchAll((array_key_exists('query',$_GET)?$_GET['query']:null));
 			$data=[];
