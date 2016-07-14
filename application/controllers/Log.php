@@ -93,7 +93,7 @@ class Log {
 		$json->_id=$object->getKeyId();
 		header('Content-Type:application/json');
 		set_status_header(201);
-		echo json_encode($json, JSON_PRETTY_PRINT);
+		echo json_encode($object->getData(), JSON_PRETTY_PRINT);
 	}
 	private function get(){
 		try{
